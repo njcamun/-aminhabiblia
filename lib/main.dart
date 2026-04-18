@@ -38,7 +38,7 @@ class BibliaApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return MaterialApp(
-      title: 'Bíblia & Hinos',
+      title: 'A Minha Bíblia',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         useMaterial3: true,

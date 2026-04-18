@@ -1,5 +1,5 @@
-name: biblia_app
-description: "Bíblia Sagrada e Hinários (Harpa Cristã & Novo Cântico) - Edição Angola"
+name: aminhabiblia
+description: "A Minha Bíblia - Edição Angola"
 publish_to: 'none'
 version: 1.0.0+28
 

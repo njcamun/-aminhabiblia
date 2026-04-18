@@ -1,9 +1,5 @@
-import 'dart:io';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:drift/drift.dart' hide Column;
-import 'package:drift/native.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:path/path.dart' as p;
 import 'package:biblia_app/data/database/database.dart';
 import 'package:biblia_app/data/database/daos.dart';
 import 'package:biblia_app/data/models/hymn.dart';
@@ -14,37 +10,11 @@ import 'package:biblia_app/data/repositories/bible_repository.dart';
 import 'package:biblia_app/logic/quiz_generator_service.dart';
 import 'package:biblia_app/logic/firebase_sync_service.dart';
 import 'package:biblia_app/data/database/mappers.dart';
+import 'database_connection.dart' as db_conn;
 
 /// Provider para a instância do AppDatabase (Drift)
 final databaseProvider = Provider<AppDatabase>((ref) {
-  final executor = LazyDatabase(() async {
-    final dbFolder = await getApplicationDocumentsDirectory();
-    final driftDir = Directory(p.join(dbFolder.path, 'drift_db'));
-    
-    if (!await driftDir.exists()) {
-      await driftDir.create(recursive: true);
-    }
-    
-    final file = File(p.join(driftDir.path, 'biblia_app.db'));
-
-    // SOLUÇÃO PARA O ERRO 16KB: 
-    // Se o ficheiro tiver exatamente 16384 bytes e estiver a falhar, pode estar corrompido.
-    // No entanto, vamos focar na configuração robusta de abertura.
-
-    return NativeDatabase(file, setup: (db) {
-      // 1. Aumentar o timeout para evitar bloqueios imediatos
-      db.execute('PRAGMA busy_timeout = 5000;');
-      
-      // 2. Configurar o tamanho da página para compatibilidade com kernels de 16KB (Android 15+)
-      db.execute('PRAGMA page_size = 16384;');
-      
-      // 3. Ativar WAL e sincronização segura
-      db.execute('PRAGMA journal_mode = WAL;');
-      db.execute('PRAGMA synchronous = NORMAL;');
-    });
-  });
-  
-  final db = AppDatabase(executor);
+  final db = AppDatabase(db_conn.connect());
   ref.onDispose(() => db.close());
   return db;
 });
