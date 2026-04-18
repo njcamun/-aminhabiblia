@@ -1,0 +1,70 @@
+{
+  "project_info": {
+    "project_number": "5826002464",
+    "project_id": "aminhabiblia-558d1",
+    "storage_bucket": "aminhabiblia-558d1.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:5826002464:android:6505118ef31d2ce3194645",
+        "android_client_info": {
+          "package_name": "com.nelson.biblia_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "5826002464-15o5m3bmlprpbvj6ud5n8ce7th4hqn62.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.nelson.biblia_app",
+            "certificate_hash": "76eef013b02af500225ed39c1a6cb7e94a1156a7"
+          }
+        },
+        {
+          "client_id": "5826002464-lvchl0mdub0mc917vmp7q7tbh8nt390n.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.nelson.biblia_app",
+            "certificate_hash": "b917c8760283d077a05ae74124ed78fe1fd78116"
+          }
+        },
+        {
+          "client_id": "5826002464-t475k2mn4djt39rc4tf03d7la1sab7a6.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.nelson.biblia_app",
+            "certificate_hash": "84cc9843fdb126d46b81446ab2e0ced7ee24d9aa"
+          }
+        },
+        {
+          "client_id": "5826002464-qu7ris02778ab0p5ul2i4fesr98077ko.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyChRNj8umfbo_ZXiQ0j8AA9x83BOQBIgL0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "5826002464-qu7ris02778ab0p5ul2i4fesr98077ko.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "5826002464-6u0o0gj0ibrbds61vqieh45vjhpkccrj.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.bibliaApp"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

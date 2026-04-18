@@ -1,0 +1,44 @@
+[
+  {
+    "id": "ACF",
+    "name": "Almeida Corrigida Fiel",
+    "storagePath": "bibles/ACF.json",
+    "sizeBytes": 3993954
+  },
+  {
+    "id": "ARA",
+    "name": "Almeida Revista e Atualizada",
+    "storagePath": "bibles/ARA.json",
+    "sizeBytes": 3956092
+  },
+  {
+    "id": "ARC",
+    "name": "Almeida Revista e Corrigida",
+    "storagePath": "bibles/ARC.json",
+    "sizeBytes": 3993142
+  },
+  {
+    "id": "KJF",
+    "name": "King James Faithful",
+    "storagePath": "bibles/KJF.json",
+    "sizeBytes": 4146402
+  },
+  {
+    "id": "NVI",
+    "name": "Nova Versão Internacional",
+    "storagePath": "bibles/NVI.json",
+    "sizeBytes": 4010291
+  },
+  {
+    "id": "NVT",
+    "name": "Nova Versão Transformadora",
+    "storagePath": "bibles/NVT.json",
+    "sizeBytes": 4087414
+  },
+  {
+    "id": "NTLH",
+    "name": "Nova Tradução na Linguagem de Hoje",
+    "storagePath": "bibles/NTLH.json",
+    "sizeBytes": 4739210
+  }
+]

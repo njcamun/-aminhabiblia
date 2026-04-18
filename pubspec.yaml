@@ -1,0 +1,66 @@
+name: biblia_app
+description: "Bíblia Sagrada e Hinários (Harpa Cristã & Novo Cântico) - Edição Angola"
+publish_to: 'none'
+version: 1.0.0+28
+
+environment:
+  sdk: ^3.5.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+
+  # Persistência
+  drift: ^2.20.0
+  sqlite3: ^2.5.0
+  sqlite3_flutter_libs: ^0.5.22
+  path: ^1.9.0
+  path_provider: ^2.1.4
+  sqflite: ^2.3.3+2
+
+  # Firebase e Google
+  firebase_core: ^3.1.1
+  cloud_firestore: ^5.0.2
+  firebase_storage: ^12.3.6
+  firebase_auth: ^5.1.1
+  google_sign_in: ^6.3.0
+
+  # Gestão de Estado
+  flutter_riverpod: ^2.5.1
+
+  # XML, JSON e Rede
+  xml: ^6.5.0
+  dio: ^5.5.0+1
+
+  # Áudio
+  just_audio: ^0.10.5
+
+  # UI e Utilitários
+  google_fonts: ^8.0.2
+  share_plus: ^10.0.2
+  shared_preferences: ^2.3.2
+  wakelock_plus: ^1.2.10
+  string_similarity: ^2.0.0
+  timezone: ^0.9.4
+  flutter_local_notifications: ^18.0.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+  drift_dev: ^2.20.0
+  build_runner: ^2.4.0
+
+dependency_overrides:
+  analyzer: 5.13.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/biblias/NAA.json
+    - assets/book_panoramas.json
+    - assets/quiz/quiz.mp3
+    - assets/hinarios/harpa/harpa_crista.json
+    - assets/hinarios/novo_cantico/-novo_cantico.json
+    - assets/referencias/
