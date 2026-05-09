@@ -19,7 +19,7 @@ class BibleVerses extends Table {
 class Hymns extends Table {
   IntColumn get id => integer().autoIncrement()();
   TextColumn get category => text()();
-  IntColumn get number => integer()();
+  TextColumn get number => text()();
   TextColumn get title => text()();
   TextColumn get lyrics => text()();
   TextColumn get audioUrl => text().nullable()();

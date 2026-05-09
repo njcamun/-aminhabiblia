@@ -11,7 +11,7 @@ class HymnJsonParser {
       if (key == "-1") return;
 
       // Extrai o número do hino (trata casos como "400A")
-      final int number = int.tryParse(key.replaceAll(RegExp(r'[^0-9]'), '')) ?? 0;
+      final String number = key;
       final String fullTitle = value['hino'] ?? 'Sem Título';
       
       // Captura a URL do áudio se disponível

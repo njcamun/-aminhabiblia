@@ -220,7 +220,7 @@ class FirebaseSyncService {
     }
   }
 
-  Future<void> removeHymnFavoriteFromCloud(String category, int number) async {
+  Future<void> removeHymnFavoriteFromCloud(String category, String number) async {
     final uid = _uid;
     if (uid == null) return;
     try {
@@ -357,7 +357,7 @@ class FirebaseSyncService {
         cloudHymnDocs = effectiveHymnDocs.length;
         for (var doc in effectiveHymnDocs) {
           final data = doc.data();
-          final hymn = await hymnRepository!.getHymnByNumber(data['category'], data['number']);
+          final hymn = await hymnRepository!.getHymnByNumber(data['category'], data['number'].toString());
           if (hymn != null && !hymn.isFavorite) {
             await hymnRepository!.setFavorite(hymn.id, true);
             syncedHymns++;

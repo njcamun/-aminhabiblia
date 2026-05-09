@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:drift/drift.dart';
 import '../database/database.dart';
@@ -33,7 +34,10 @@ class HymnRepository {
     return (hymnDao.select(hymnDao.hymns)
           ..where(
               (t) => t.category.equals(category) & t.isFavorite.equals(true))
-          ..orderBy([(t) => OrderingTerm.asc(t.number)]))
+          ..orderBy([
+            (t) => OrderingTerm.asc(t.number.cast<int>()),
+            (t) => OrderingTerm.asc(t.number)
+          ]))
         .watch()
         .map((rows) => rows.map((h) => h.toIsar()).toList());
   }
@@ -72,7 +76,7 @@ class HymnRepository {
     }
   }
 
-  Future<Hymn?> getHymnByNumber(String category, int number) async {
+  Future<Hymn?> getHymnByNumber(String category, String number) async {
     final driftHymn = await hymnDao.getHymn(category, number);
     return driftHymn?.toIsar();
   }
@@ -84,7 +88,7 @@ class HymnRepository {
     for (final rawLine in lines) {
       String line = rawLine;
       line =
-          line.replaceAll(RegExp(r'(?<=\S)\s+\d{1,2}(?=(\s|[.,;:!?]|$))'), '');
+          line.replaceAll(RegExp(r'(?<=\S)\s+\d{1,3}(?=(\s|[.,;:!?]|$))'), '');
       line = line.replaceAll(RegExp(r'\s{2,}'), ' ').trimRight();
 
       if (line.trim().isEmpty || RegExp(r'^\d+$').hasMatch(line.trim())) {
@@ -133,8 +137,7 @@ class HymnRepository {
       if (jsonData is Map) {
         jsonData.forEach((key, value) {
           if (key == "-1") return;
-          final int? number = int.tryParse(key);
-          if (number == null) return;
+          final String number = key;
 
           final String fullTitle = value['hino'] ?? value['titulo'] ?? '';
           String title = fullTitle;
@@ -182,9 +185,9 @@ class HymnRepository {
 
       // Inserção em lote (batch) já otimizada no DAO
       await hymnDao.batchInsertHymns(companions);
-      print("Importados $category: ${companions.length} hinos.");
+      debugPrint("Importados $category: ${companions.length} hinos.");
     } catch (e) {
-      print('Erro ao importar hinos ($category): $e');
+      debugPrint('Erro ao importar hinos ($category): $e');
     }
   }
 }

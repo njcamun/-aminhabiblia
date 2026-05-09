@@ -16,7 +16,7 @@ class HymnParser {
     for (var node in root.findElements('hino')) {
       final hino = Hymn()
         ..category = category
-        ..number = int.tryParse(node.getElement('numero')?.innerText ?? '0') ?? 0
+        ..number = node.getElement('numero')?.innerText ?? '0'
         ..title = node.getElement('titulo')?.innerText ?? 'Sem Título'
         ..lyrics = node.getElement('letra')?.innerText ?? ''
         ..audioUrl = node.getElement('audioUrl')?.innerText;

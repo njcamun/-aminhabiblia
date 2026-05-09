@@ -672,11 +672,14 @@ class HymnDao extends DatabaseAccessor<AppDatabase> with _$HymnDaoMixin {
   Future<List<DriftHymn>> getHymns(String category) {
     return (select(hymns)
           ..where((t) => t.category.equals(category))
-          ..orderBy([(t) => OrderingTerm.asc(t.number)]))
+          ..orderBy([
+            (t) => OrderingTerm.asc(t.number.cast<int>()),
+            (t) => OrderingTerm.asc(t.number)
+          ]))
         .get();
   }
 
-  Future<DriftHymn?> getHymn(String category, int number) {
+  Future<DriftHymn?> getHymn(String category, String number) {
     return (select(hymns)
           ..where((t) => t.category.equals(category) & t.number.equals(number)))
         .getSingleOrNull();
@@ -698,7 +701,11 @@ class HymnDao extends DatabaseAccessor<AppDatabase> with _$HymnDaoMixin {
               t.category.equals(category) &
               (t.title.contains(query) |
                   t.lyrics.contains(query) |
-                  t.number.equals(int.tryParse(query) ?? -1))))
+                  t.number.contains(query)))
+          ..orderBy([
+            (t) => OrderingTerm.asc(t.number.cast<int>()),
+            (t) => OrderingTerm.asc(t.number)
+          ]))
         .get();
   }
 
@@ -723,7 +730,10 @@ class HymnDao extends DatabaseAccessor<AppDatabase> with _$HymnDaoMixin {
     return (select(hymns)
           ..where(
               (t) => t.category.equals(category) & t.isFavorite.equals(true))
-          ..orderBy([(t) => OrderingTerm.asc(t.number)]))
+          ..orderBy([
+            (t) => OrderingTerm.asc(t.number.cast<int>()),
+            (t) => OrderingTerm.asc(t.number)
+          ]))
         .get();
   }
 

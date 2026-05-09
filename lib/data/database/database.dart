@@ -35,14 +35,13 @@ class AppDatabase extends _$AppDatabase {
   }
 
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 4;
 
   @override
   MigrationStrategy get migration {
     return MigrationStrategy(
       onCreate: (Migrator m) => m.createAll(),
       onUpgrade: (Migrator m, int from, int to) async {
-        // Versão 2 -> 3: Adicionar índices para otimização
         if (from < 3) {
           try {
             await _createPerformanceIndexes();
@@ -50,6 +49,13 @@ class AppDatabase extends _$AppDatabase {
           } catch (e) {
             debugPrint('AVISO: Erro ao criar índices: $e');
           }
+        }
+        
+        if (from < 4) {
+          // Migração para mudar número do hino de Int para Text
+          await m.deleteTable('hymns');
+          await m.createTable(hymns);
+          debugPrint('DEBUG: Tabela de hinos recriada para suportar números alfanuméricos');
         }
       },
       beforeOpen: (details) async {

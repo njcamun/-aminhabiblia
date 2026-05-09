@@ -27,13 +27,13 @@ void main() async {
   
   runApp(
     const ProviderScope(
-      child: BibliaApp(),
+      child: AMinhaBibliaApp(),
     ),
   );
 }
 
-class BibliaApp extends ConsumerWidget {
-  const BibliaApp({super.key});
+class AMinhaBibliaApp extends ConsumerWidget {
+  const AMinhaBibliaApp({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

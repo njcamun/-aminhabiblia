@@ -1,15 +1,14 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:drift/drift.dart' hide Column;
-import 'package:biblia_app/data/database/database.dart';
-import 'package:biblia_app/data/database/daos.dart';
-import 'package:biblia_app/data/models/hymn.dart';
-import 'package:biblia_app/data/models/bible_verse.dart';
-import 'package:biblia_app/data/models/study_models.dart';
-import 'package:biblia_app/data/repositories/hymn_repository.dart';
-import 'package:biblia_app/data/repositories/bible_repository.dart';
-import 'package:biblia_app/logic/quiz_generator_service.dart';
-import 'package:biblia_app/logic/firebase_sync_service.dart';
-import 'package:biblia_app/data/database/mappers.dart';
+import 'package:aminhabiblia/data/database/database.dart';
+import 'package:aminhabiblia/data/database/daos.dart';
+import 'package:aminhabiblia/data/models/hymn.dart';
+import 'package:aminhabiblia/data/models/bible_verse.dart';
+import 'package:aminhabiblia/data/models/study_models.dart';
+import 'package:aminhabiblia/data/repositories/hymn_repository.dart';
+import 'package:aminhabiblia/data/repositories/bible_repository.dart';
+import 'package:aminhabiblia/logic/quiz_generator_service.dart';
+import 'package:aminhabiblia/logic/firebase_sync_service.dart';
+import 'package:aminhabiblia/data/database/mappers.dart';
 import 'database_connection.dart' as db_conn;
 
 /// Provider para a instância do AppDatabase (Drift)

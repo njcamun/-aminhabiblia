@@ -566,9 +566,9 @@ class $HymnsTable extends Hymns with TableInfo<$HymnsTable, DriftHymn> {
       type: DriftSqlType.string, requiredDuringInsert: true);
   static const VerificationMeta _numberMeta = const VerificationMeta('number');
   @override
-  late final GeneratedColumn<int> number = GeneratedColumn<int>(
+  late final GeneratedColumn<String> number = GeneratedColumn<String>(
       'number', aliasedName, false,
-      type: DriftSqlType.int, requiredDuringInsert: true);
+      type: DriftSqlType.string, requiredDuringInsert: true);
   static const VerificationMeta _titleMeta = const VerificationMeta('title');
   @override
   late final GeneratedColumn<String> title = GeneratedColumn<String>(
@@ -669,7 +669,7 @@ class $HymnsTable extends Hymns with TableInfo<$HymnsTable, DriftHymn> {
       category: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}category'])!,
       number: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}number'])!,
+          .read(DriftSqlType.string, data['${effectivePrefix}number'])!,
       title: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}title'])!,
       lyrics: attachedDatabase.typeMapping
@@ -692,7 +692,7 @@ class $HymnsTable extends Hymns with TableInfo<$HymnsTable, DriftHymn> {
 class DriftHymn extends DataClass implements Insertable<DriftHymn> {
   final int id;
   final String category;
-  final int number;
+  final String number;
   final String title;
   final String lyrics;
   final String? audioUrl;
@@ -712,7 +712,7 @@ class DriftHymn extends DataClass implements Insertable<DriftHymn> {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
     map['category'] = Variable<String>(category);
-    map['number'] = Variable<int>(number);
+    map['number'] = Variable<String>(number);
     map['title'] = Variable<String>(title);
     map['lyrics'] = Variable<String>(lyrics);
     if (!nullToAbsent || audioUrl != null) {
@@ -748,7 +748,7 @@ class DriftHymn extends DataClass implements Insertable<DriftHymn> {
     return DriftHymn(
       id: serializer.fromJson<int>(json['id']),
       category: serializer.fromJson<String>(json['category']),
-      number: serializer.fromJson<int>(json['number']),
+      number: serializer.fromJson<String>(json['number']),
       title: serializer.fromJson<String>(json['title']),
       lyrics: serializer.fromJson<String>(json['lyrics']),
       audioUrl: serializer.fromJson<String?>(json['audioUrl']),
@@ -762,7 +762,7 @@ class DriftHymn extends DataClass implements Insertable<DriftHymn> {
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
       'category': serializer.toJson<String>(category),
-      'number': serializer.toJson<int>(number),
+      'number': serializer.toJson<String>(number),
       'title': serializer.toJson<String>(title),
       'lyrics': serializer.toJson<String>(lyrics),
       'audioUrl': serializer.toJson<String?>(audioUrl),
@@ -774,7 +774,7 @@ class DriftHymn extends DataClass implements Insertable<DriftHymn> {
   DriftHymn copyWith(
           {int? id,
           String? category,
-          int? number,
+          String? number,
           String? title,
           String? lyrics,
           Value<String?> audioUrl = const Value.absent(),
@@ -839,7 +839,7 @@ class DriftHymn extends DataClass implements Insertable<DriftHymn> {
 class HymnsCompanion extends UpdateCompanion<DriftHymn> {
   final Value<int> id;
   final Value<String> category;
-  final Value<int> number;
+  final Value<String> number;
   final Value<String> title;
   final Value<String> lyrics;
   final Value<String?> audioUrl;
@@ -858,7 +858,7 @@ class HymnsCompanion extends UpdateCompanion<DriftHymn> {
   HymnsCompanion.insert({
     this.id = const Value.absent(),
     required String category,
-    required int number,
+    required String number,
     required String title,
     required String lyrics,
     this.audioUrl = const Value.absent(),
@@ -871,7 +871,7 @@ class HymnsCompanion extends UpdateCompanion<DriftHymn> {
   static Insertable<DriftHymn> custom({
     Expression<int>? id,
     Expression<String>? category,
-    Expression<int>? number,
+    Expression<String>? number,
     Expression<String>? title,
     Expression<String>? lyrics,
     Expression<String>? audioUrl,
@@ -893,7 +893,7 @@ class HymnsCompanion extends UpdateCompanion<DriftHymn> {
   HymnsCompanion copyWith(
       {Value<int>? id,
       Value<String>? category,
-      Value<int>? number,
+      Value<String>? number,
       Value<String>? title,
       Value<String>? lyrics,
       Value<String?>? audioUrl,
@@ -921,7 +921,7 @@ class HymnsCompanion extends UpdateCompanion<DriftHymn> {
       map['category'] = Variable<String>(category.value);
     }
     if (number.present) {
-      map['number'] = Variable<int>(number.value);
+      map['number'] = Variable<String>(number.value);
     }
     if (title.present) {
       map['title'] = Variable<String>(title.value);
@@ -3438,7 +3438,7 @@ typedef $$BibleVersesTableProcessedTableManager = ProcessedTableManager<
 typedef $$HymnsTableCreateCompanionBuilder = HymnsCompanion Function({
   Value<int> id,
   required String category,
-  required int number,
+  required String number,
   required String title,
   required String lyrics,
   Value<String?> audioUrl,
@@ -3448,7 +3448,7 @@ typedef $$HymnsTableCreateCompanionBuilder = HymnsCompanion Function({
 typedef $$HymnsTableUpdateCompanionBuilder = HymnsCompanion Function({
   Value<int> id,
   Value<String> category,
-  Value<int> number,
+  Value<String> number,
   Value<String> title,
   Value<String> lyrics,
   Value<String?> audioUrl,
@@ -3470,7 +3470,7 @@ class $$HymnsTableFilterComposer extends Composer<_$AppDatabase, $HymnsTable> {
   ColumnFilters<String> get category => $composableBuilder(
       column: $table.category, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<int> get number => $composableBuilder(
+  ColumnFilters<String> get number => $composableBuilder(
       column: $table.number, builder: (column) => ColumnFilters(column));
 
   ColumnFilters<String> get title => $composableBuilder(
@@ -3504,7 +3504,7 @@ class $$HymnsTableOrderingComposer
   ColumnOrderings<String> get category => $composableBuilder(
       column: $table.category, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<int> get number => $composableBuilder(
+  ColumnOrderings<String> get number => $composableBuilder(
       column: $table.number, builder: (column) => ColumnOrderings(column));
 
   ColumnOrderings<String> get title => $composableBuilder(
@@ -3538,7 +3538,7 @@ class $$HymnsTableAnnotationComposer
   GeneratedColumn<String> get category =>
       $composableBuilder(column: $table.category, builder: (column) => column);
 
-  GeneratedColumn<int> get number =>
+  GeneratedColumn<String> get number =>
       $composableBuilder(column: $table.number, builder: (column) => column);
 
   GeneratedColumn<String> get title =>
@@ -3582,7 +3582,7 @@ class $$HymnsTableTableManager extends RootTableManager<
           updateCompanionCallback: ({
             Value<int> id = const Value.absent(),
             Value<String> category = const Value.absent(),
-            Value<int> number = const Value.absent(),
+            Value<String> number = const Value.absent(),
             Value<String> title = const Value.absent(),
             Value<String> lyrics = const Value.absent(),
             Value<String?> audioUrl = const Value.absent(),
@@ -3602,7 +3602,7 @@ class $$HymnsTableTableManager extends RootTableManager<
           createCompanionCallback: ({
             Value<int> id = const Value.absent(),
             required String category,
-            required int number,
+            required String number,
             required String title,
             required String lyrics,
             Value<String?> audioUrl = const Value.absent(),
