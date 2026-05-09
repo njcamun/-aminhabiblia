@@ -157,7 +157,7 @@ class _HymnalListScreenState extends ConsumerState<HymnalListScreen> {
         color: Colors.white,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 4,
             offset: const Offset(0, 2),
           ),
@@ -203,13 +203,13 @@ class _HymnalListScreenState extends ConsumerState<HymnalListScreen> {
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16), 
-        side: BorderSide(color: color.withOpacity(0.1))
+        side: BorderSide(color: color.withValues(alpha: 0.1))
       ),
       child: ListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         leading: CircleAvatar(
           backgroundColor: color,
-          child: Text('${hino.number}', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13)),
+          child: Text(hino.number, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13)),
         ),
         title: _buildHighlightedText(hino.title, _searchQuery, GoogleFonts.playfairDisplay(fontWeight: FontWeight.bold, fontSize: 16)),
         subtitle: _buildHighlightedText(

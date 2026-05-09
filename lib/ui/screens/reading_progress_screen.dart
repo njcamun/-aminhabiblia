@@ -155,11 +155,13 @@ class _ReadingProgressScreenState extends State<ReadingProgressScreen> {
                       IconButton(
                         icon: const Icon(Icons.close, size: 20, color: Colors.red),
                         onPressed: () async {
+                          final messenger = ScaffoldMessenger.of(context);
+                          final bookName = book.name;
                           await _clearBookProgress(book.id);
                           if (mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
+                            messenger.showSnackBar(
                               SnackBar(
-                                content: Text('Progresso de ${book.name} removido.'),
+                                content: Text('Progresso de $bookName removido.'),
                                 behavior: SnackBarBehavior.floating,
                               ),
                             );

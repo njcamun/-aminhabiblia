@@ -130,7 +130,6 @@ class _HomeContentState extends ConsumerState<HomeContent> {
   @override
   Widget build(BuildContext context) {
     final activeVersion = ref.watch(activeBibleVersionProvider);
-    final bibleRepo = ref.watch(bibleRepositoryProvider);
     final screenWidth = MediaQuery.of(context).size.width;
     final isTablet = screenWidth > 600;
 
@@ -152,7 +151,7 @@ class _HomeContentState extends ConsumerState<HomeContent> {
                 children: [
                   _buildHeader(context),
                   const SizedBox(height: 32),
-                  _buildVerseOfTheDay(bibleRepo, activeVersion, isTablet),
+                  _buildVerseOfTheDay(activeVersion, isTablet),
                   const SizedBox(height: 32),
                   _buildSectionTitle('Biblioteca Sagrada'),
                   const SizedBox(height: 16),
@@ -207,7 +206,7 @@ class _HomeContentState extends ConsumerState<HomeContent> {
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(16),
-                  boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10)],
+                  boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10)],
                 ),
                 child: _isSyncing
                     ? const SizedBox(
@@ -229,7 +228,7 @@ class _HomeContentState extends ConsumerState<HomeContent> {
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(16),
-                  boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10)],
+                  boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10)],
                 ),
                 child: const Icon(Icons.settings_outlined, color: Color(0xFF5D4037)),
               ),
@@ -240,7 +239,7 @@ class _HomeContentState extends ConsumerState<HomeContent> {
     );
   }
 
-  Widget _buildVerseOfTheDay(bibleRepo, String version, bool isTablet) {
+  Widget _buildVerseOfTheDay(String version, bool isTablet) {
     return FutureBuilder<BibleVerse?>(
       future: _verseOfDayFuture,
       builder: (context, snapshot) {
@@ -257,7 +256,7 @@ class _HomeContentState extends ConsumerState<HomeContent> {
             ),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.2),
+                color: Colors.black.withValues(alpha: 0.2),
                 blurRadius: 20,
                 offset: const Offset(0, 10),
               ),
@@ -275,7 +274,7 @@ class _HomeContentState extends ConsumerState<HomeContent> {
                     style: GoogleFonts.lato(
                       fontSize: 12,
                       fontWeight: FontWeight.bold,
-                      color: Colors.white.withOpacity(0.6),
+                      color: Colors.white.withValues(alpha: 0.6),
                       letterSpacing: 1.5,
                     ),
                   ),
@@ -349,7 +348,7 @@ class _HomeContentState extends ConsumerState<HomeContent> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(24),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 20)],
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 20)],
       ),
       child: Row(
         children: [
@@ -396,7 +395,7 @@ class _HomeContentState extends ConsumerState<HomeContent> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(24),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 20)],
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 20)],
       ),
       child: Row(
         children: [
@@ -542,7 +541,7 @@ class _HymnalMiniCard extends StatelessWidget {
           decoration: BoxDecoration(
             color: color,
             borderRadius: BorderRadius.circular(20),
-            boxShadow: [BoxShadow(color: color.withOpacity(0.3), blurRadius: 10, offset: const Offset(0, 4))],
+            boxShadow: [BoxShadow(color: color.withValues(alpha: 0.3), blurRadius: 10, offset: const Offset(0, 4))],
           ),
           padding: const EdgeInsets.all(16),
           child: Column(

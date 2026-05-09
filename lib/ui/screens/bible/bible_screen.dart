@@ -9,6 +9,7 @@ import '../../../logic/providers.dart';
 import '../../../data/models/book.dart';
 import '../../../data/models/bible_verse.dart';
 import '../../../data/models/study_models.dart';
+import '../../../data/repositories/bible_repository.dart';
 
 class BibleScreen extends ConsumerStatefulWidget {
   final int? initialBookId;
@@ -167,7 +168,7 @@ class _BibleScreenState extends ConsumerState<BibleScreen> with SingleTickerProv
 
     return PopScope(
       canPop: !_isReading,
-      onPopInvoked: (didPop) {
+      onPopInvokedWithResult: (didPop, _) {
         if (didPop) return;
         if (_isReading) {
           _exitReadingToBookChooser();
@@ -194,12 +195,12 @@ class _BibleScreenState extends ConsumerState<BibleScreen> with SingleTickerProv
     );
   }
 
-  Widget _buildColorToolbar(bibleRepo) {
+  Widget _buildColorToolbar(BibleRepository bibleRepo) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
       decoration: BoxDecoration(
         color: Colors.white,
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 4, offset: const Offset(0, 2))]
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 4, offset: const Offset(0, 2))]
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -230,7 +231,7 @@ class _BibleScreenState extends ConsumerState<BibleScreen> with SingleTickerProv
     });
   }
 
-  PreferredSizeWidget _buildSelectionAppBar(bibleRepo) => AppBar(
+  PreferredSizeWidget _buildSelectionAppBar(BibleRepository bibleRepo) => AppBar(
     backgroundColor: const Color(0xFF2D2D2D), 
     leading: IconButton(icon: const Icon(Icons.close, color: Colors.white), onPressed: () => setState(() { _selectedVerseKeys.clear(); _showColorToolbar = false; })), 
     title: Text('${_selectedVerseKeys.length} selecionados', style: const TextStyle(color: Colors.white, fontSize: 16)), 
@@ -291,9 +292,9 @@ class _BibleScreenState extends ConsumerState<BibleScreen> with SingleTickerProv
     bottom: _isGlobalSearching ? null : TabBar(controller: _tabController, labelColor: const Color(0xFF5D4037), indicatorColor: const Color(0xFFD4AF37), tabs: const [Tab(text: "LIVROS"), Tab(text: "FAVORITOS")])
   );
 
-  Widget _buildMainContent(bibleRepo, String version, AsyncValue<Map<int, double>> progressesAsync) => _isGlobalSearching ? _buildSearchResults(bibleRepo, version) : TabBarView(controller: _tabController, children: [_buildBookList(bibleRepo, version, progressesAsync), _buildFavoritesList(version)]);
+  Widget _buildMainContent(BibleRepository bibleRepo, String version, AsyncValue<Map<int, double>> progressesAsync) => _isGlobalSearching ? _buildSearchResults(bibleRepo, version) : TabBarView(controller: _tabController, children: [_buildBookList(bibleRepo, version, progressesAsync), _buildFavoritesList(version)]);
 
-  Widget _buildBookList(bibleRepo, String version, AsyncValue<Map<int, double>> progressesAsync) {
+  Widget _buildBookList(BibleRepository bibleRepo, String version, AsyncValue<Map<int, double>> progressesAsync) {
     final bottomInset = MediaQuery.of(context).padding.bottom;
 
     return progressesAsync.when(
@@ -373,12 +374,12 @@ class _BibleScreenState extends ConsumerState<BibleScreen> with SingleTickerProv
                             onTap: () {
                               setState(() { _selectedBookId = book.id; _selectedBookName = book.name; _selectedChapter = chapterNumber; _isReading = true; _activeHighlightKey = null; _activeSearchTerm = null; _expandedBookId = book.id; });
                               Future.delayed(const Duration(milliseconds: 50), () { if (_pageController.hasClients) _pageController.jumpToPage(index); });
-                              bibleRepo?.saveLastPosition(version, book.id, chapterNumber);
+                              bibleRepo.saveLastPosition(version, book.id, chapterNumber);
                             },
                             child: Container(
                               alignment: Alignment.center,
                               decoration: BoxDecoration(
-                                color: isRead ? Colors.green.withOpacity(0.1) : const Color(0xFFF5F5DC),
+                                color: isRead ? Colors.green.withValues(alpha: 0.1) : const Color(0xFFF5F5DC),
                                 borderRadius: BorderRadius.circular(8),
                                 border: Border.all(color: isRead ? Colors.green : Colors.brown.shade100, width: isRead ? 2 : 1),
                               ),
@@ -416,7 +417,7 @@ class _BibleScreenState extends ConsumerState<BibleScreen> with SingleTickerProv
     );
   }
 
-  Widget _buildSearchResults(bibleRepo, String version) { if (_isLoadingSearch) return const Center(child: CircularProgressIndicator(color: Color(0xFFD4AF37))); final query = _searchController.text.trim(); if (query.length < 3) return _emptyStudyState("Digite pelo menos 3 caracteres."); if (_searchResults.isEmpty) return _emptyStudyState("Nenhum resultado encontrado."); return ListView.builder(padding: const EdgeInsets.all(16), itemCount: _searchResults.length, itemBuilder: (context, index) { final verse = _searchResults[index]; return Card(margin: const EdgeInsets.only(bottom: 12), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16), side: BorderSide(color: Colors.grey.shade200)), child: InkWell(onTap: () => _navigateToVerse(verse, searchTerm: query), child: Padding(padding: const EdgeInsets.all(20), child: Column(children: [Text('${verse.bookName} ${verse.chapter}:${verse.verse}', textAlign: TextAlign.center, style: GoogleFonts.lato(fontWeight: FontWeight.bold, color: const Color(0xFFD4AF37))), const SizedBox(height: 12), _buildHighlightedSearchText(verse.text, query)])))); }); }
+  Widget _buildSearchResults(BibleRepository bibleRepo, String version) { if (_isLoadingSearch) return const Center(child: CircularProgressIndicator(color: Color(0xFFD4AF37))); final query = _searchController.text.trim(); if (query.length < 3) return _emptyStudyState("Digite pelo menos 3 caracteres."); if (_searchResults.isEmpty) return _emptyStudyState("Nenhum resultado encontrado."); return ListView.builder(padding: const EdgeInsets.all(16), itemCount: _searchResults.length, itemBuilder: (context, index) { final verse = _searchResults[index]; return Card(margin: const EdgeInsets.only(bottom: 12), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16), side: BorderSide(color: Colors.grey.shade200)), child: InkWell(onTap: () => _navigateToVerse(verse, searchTerm: query), child: Padding(padding: const EdgeInsets.all(20), child: Column(children: [Text('${verse.bookName} ${verse.chapter}:${verse.verse}', textAlign: TextAlign.center, style: GoogleFonts.lato(fontWeight: FontWeight.bold, color: const Color(0xFFD4AF37))), const SizedBox(height: 12), _buildHighlightedSearchText(verse.text, query)])))); }); }
 
   Widget _emptyStudyState(String message) => Center(child: Padding(padding: const EdgeInsets.all(40), child: Text(message, textAlign: TextAlign.center, style: GoogleFonts.lato(color: Colors.grey, fontSize: 14))));
 
@@ -438,13 +439,13 @@ class _BibleScreenState extends ConsumerState<BibleScreen> with SingleTickerProv
 
   Widget _buildHighlightedSearchText(String text, String query) { final matches = query.toLowerCase().allMatches(text.toLowerCase()); if (matches.isEmpty) return Text(text, textAlign: TextAlign.center, style: GoogleFonts.lora(fontSize: 16)); final List<TextSpan> spans = []; int lastMatchEnd = 0; for (final match in matches) { if (match.start > lastMatchEnd) spans.add(TextSpan(text: text.substring(lastMatchEnd, match.start))); spans.add(TextSpan(text: text.substring(match.start, match.end), style: const TextStyle(fontWeight: FontWeight.w900, backgroundColor: Color(0xFFFFF176)))); lastMatchEnd = match.end; } if (lastMatchEnd < text.length) spans.add(TextSpan(text: text.substring(lastMatchEnd))); return RichText(textAlign: TextAlign.center, text: TextSpan(style: GoogleFonts.lora(fontSize: 16, color: const Color(0xFF2D2D2D)), children: spans)); }
 
-  Widget _buildImmersiveReader(bibleRepo, String version, Color bgColor, Color textColor, String currentTheme) {
+  Widget _buildImmersiveReader(BibleRepository bibleRepo, String version, Color bgColor, Color textColor, String currentTheme) {
     final book = Book.allBooks.firstWhere((b) => b.id == _selectedBookId);
     return Column(children: [
       _buildTopBar(version, bibleRepo, currentTheme),
       Expanded(child: PageView.builder(controller: _pageController, itemCount: book.chapters, onPageChanged: (page) { 
         setState(() { _selectedChapter = page + 1; _selectedVerseKeys.clear(); _showColorToolbar = false; _activeHighlightKey = null; });
-        bibleRepo?.saveLastPosition(version, _selectedBookId!, page + 1); 
+        bibleRepo.saveLastPosition(version, _selectedBookId!, page + 1); 
       }, itemBuilder: (context, index) => _ChapterReaderView(
         key: ValueKey('${_selectedBookId}_${index + 1}'),
         bibleRepo: bibleRepo, version: version, bookId: _selectedBookId!, chapter: index + 1,
@@ -464,7 +465,7 @@ class _BibleScreenState extends ConsumerState<BibleScreen> with SingleTickerProv
       Container(
         decoration: BoxDecoration(
           color: currentTheme == 'dark' ? const Color(0xFF1E1E1E) : (currentTheme == 'sepia' ? const Color(0xFFF4ECD8) : const Color(0xFFFDFBF7)),
-          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 10, offset: const Offset(0, -2))]
+          boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.1), blurRadius: 10, offset: const Offset(0, -2))]
         ),
         child: SafeArea(top: false, child: Column(mainAxisSize: MainAxisSize.min, children: [
           _buildBottomVerseTicker(bibleRepo, version, currentTheme),
@@ -481,14 +482,14 @@ class _BibleScreenState extends ConsumerState<BibleScreen> with SingleTickerProv
     Color barColor = const Color(0xFFFDFBF7);
     Color textColor = Colors.black54;
     if (currentTheme == 'dark') { barColor = const Color(0xFF1E1E1E); textColor = Colors.white54; }
-    else if (currentTheme == 'sepia') { barColor = const Color(0xFFF4ECD8); textColor = const Color(0xFF5B4636).withOpacity(0.7); }
+    else if (currentTheme == 'sepia') { barColor = const Color(0xFFF4ECD8); textColor = const Color(0xFF5B4636).withValues(alpha: 0.7); }
 
     return Container(
       height: 50,
       width: double.infinity,
       decoration: BoxDecoration(
         color: barColor,
-        border: Border(top: BorderSide(color: Colors.black.withOpacity(0.05))),
+        border: Border(top: BorderSide(color: Colors.black.withValues(alpha: 0.05))),
       ),
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
@@ -525,9 +526,9 @@ class _BibleScreenState extends ConsumerState<BibleScreen> with SingleTickerProv
     );
   }
 
-  Widget _buildBottomVerseTicker(bibleRepo, String version, String currentTheme) {
+  Widget _buildBottomVerseTicker(BibleRepository bibleRepo, String version, String currentTheme) {
     return FutureBuilder<List<BibleVerse>>(
-      future: bibleRepo?.getChapter(version, _selectedBookId!, _selectedChapter),
+      future: bibleRepo.getChapter(version, _selectedBookId!, _selectedChapter),
       builder: (context, snapshot) {
         if (!snapshot.hasData) return const SizedBox();
         final verses = snapshot.data!;
@@ -535,14 +536,14 @@ class _BibleScreenState extends ConsumerState<BibleScreen> with SingleTickerProv
         Color barColor = const Color(0xFFFDFBF7);
         Color textColor = Colors.black54;
         if (currentTheme == 'dark') { barColor = const Color(0xFF1E1E1E); textColor = Colors.white54; }
-        else if (currentTheme == 'sepia') { barColor = const Color(0xFFF4ECD8); textColor = const Color(0xFF5B4636).withOpacity(0.7); }
+        else if (currentTheme == 'sepia') { barColor = const Color(0xFFF4ECD8); textColor = const Color(0xFF5B4636).withValues(alpha: 0.7); }
 
         return Container(
           height: 50,
           width: double.infinity,
           decoration: BoxDecoration(
             color: barColor,
-            border: Border(top: BorderSide(color: Colors.black.withOpacity(0.05))),
+            border: Border(top: BorderSide(color: Colors.black.withValues(alpha: 0.05))),
           ),
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
@@ -575,13 +576,13 @@ class _BibleScreenState extends ConsumerState<BibleScreen> with SingleTickerProv
     );
   }
 
-  Widget _buildTopBar(String version, bibleRepo, String currentTheme) {
+  Widget _buildTopBar(String version, BibleRepository bibleRepo, String currentTheme) {
     Color barColor = const Color(0xFFF5F5DC);
     Color iconColor = Colors.brown;
     if (currentTheme == 'dark') { barColor = const Color(0xFF1E1E1E); iconColor = Colors.white70; }
     else if (currentTheme == 'sepia') { barColor = const Color(0xFFE8DFD0); iconColor = const Color(0xFF5B4636); }
 
-    return SafeArea(child: Container(padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8), decoration: BoxDecoration(color: barColor, boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 4, offset: const Offset(0, 2))]), child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [IconButton(icon: Icon(Icons.arrow_back_ios_new, size: 20, color: iconColor), onPressed: _exitReadingToBookChooser), Text('$_selectedBookName $_selectedChapter', style: GoogleFonts.playfairDisplay(fontSize: 18, fontWeight: FontWeight.bold, color: currentTheme == 'dark' ? Colors.white : const Color(0xFF2D2D2D))), Row(children: [IconButton(icon: Icon(Icons.text_fields, size: 20, color: iconColor), onPressed: () => _showFontSizeSelector()), IconButton(icon: Icon(Icons.palette_outlined, size: 20, color: iconColor), onPressed: () => _showThemeSelector(bibleRepo, currentTheme)), FutureBuilder<List<String>>(future: bibleRepo?.getImportedVersions(), builder: (context, snapshot) { final installedVersions = snapshot.data ?? [version]; return DropdownButton<String>(value: installedVersions.contains(version) ? version : installedVersions.first, underline: const SizedBox(), icon: Icon(Icons.keyboard_arrow_down, size: 18, color: iconColor), dropdownColor: barColor, items: installedVersions.map((v) => DropdownMenuItem(value: v, child: Text(v, style: GoogleFonts.lato(fontWeight: FontWeight.bold, fontSize: 13, color: currentTheme == 'dark' ? Colors.white70 : Colors.black87)))).toList(), onChanged: (val) { if (val != null) { ref.read(activeBibleVersionProvider.notifier).state = val; bibleRepo?.saveLastPosition(val, _selectedBookId!, _selectedChapter); } }); })])])));
+    return SafeArea(child: Container(padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8), decoration: BoxDecoration(color: barColor, boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.02), blurRadius: 4, offset: const Offset(0, 2))]), child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [IconButton(icon: Icon(Icons.arrow_back_ios_new, size: 20, color: iconColor), onPressed: _exitReadingToBookChooser), Text('$_selectedBookName $_selectedChapter', style: GoogleFonts.playfairDisplay(fontSize: 18, fontWeight: FontWeight.bold, color: currentTheme == 'dark' ? Colors.white : const Color(0xFF2D2D2D))), Row(children: [IconButton(icon: Icon(Icons.text_fields, size: 20, color: iconColor), onPressed: () => _showFontSizeSelector()), IconButton(icon: Icon(Icons.palette_outlined, size: 20, color: iconColor), onPressed: () => _showThemeSelector(bibleRepo, currentTheme)), FutureBuilder<List<String>>(future: bibleRepo.getImportedVersions(), builder: (context, snapshot) { final installedVersions = snapshot.data ?? [version]; return DropdownButton<String>(value: installedVersions.contains(version) ? version : installedVersions.first, underline: const SizedBox(), icon: Icon(Icons.keyboard_arrow_down, size: 18, color: iconColor), dropdownColor: barColor, items: installedVersions.map((v) => DropdownMenuItem(value: v, child: Text(v, style: GoogleFonts.lato(fontWeight: FontWeight.bold, fontSize: 13, color: currentTheme == 'dark' ? Colors.white70 : Colors.black87)))).toList(), onChanged: (val) { if (val != null) { ref.read(activeBibleVersionProvider.notifier).state = val; bibleRepo.saveLastPosition(val, _selectedBookId!, _selectedChapter); } }); })])])));
   }
 
   void _showFontSizeSelector() {
@@ -609,14 +610,14 @@ class _BibleScreenState extends ConsumerState<BibleScreen> with SingleTickerProv
     return GestureDetector(
       onTap: () { setState(() => _fontSize = size); Navigator.pop(context); },
       child: Column(children: [
-        Container(width: 60, height: 60, decoration: BoxDecoration(color: isSelected ? const Color(0xFFD4AF37).withOpacity(0.1) : Colors.grey[100], borderRadius: BorderRadius.circular(15), border: Border.all(color: isSelected ? const Color(0xFFD4AF37) : Colors.transparent, width: 2)), child: Center(child: Text("Aa", style: TextStyle(fontSize: size * 0.8, fontWeight: FontWeight.bold, color: isSelected ? const Color(0xFFD4AF37) : Colors.black87)))),
+        Container(width: 60, height: 60, decoration: BoxDecoration(color: isSelected ? const Color(0xFFD4AF37).withValues(alpha: 0.1) : Colors.grey[100], borderRadius: BorderRadius.circular(15), border: Border.all(color: isSelected ? const Color(0xFFD4AF37) : Colors.transparent, width: 2)), child: Center(child: Text("Aa", style: TextStyle(fontSize: size * 0.8, fontWeight: FontWeight.bold, color: isSelected ? const Color(0xFFD4AF37) : Colors.black87)))),
         const SizedBox(height: 8),
         Text(label, style: GoogleFonts.lato(fontSize: 12, fontWeight: isSelected ? FontWeight.bold : FontWeight.normal))
       ]),
     );
   }
 
-  void _showThemeSelector(bibleRepo, String currentTheme) {
+  void _showThemeSelector(BibleRepository bibleRepo, String currentTheme) {
     showModalBottomSheet(
       context: context, backgroundColor: Colors.transparent,
       builder: (context) => Container(
@@ -636,18 +637,18 @@ class _BibleScreenState extends ConsumerState<BibleScreen> with SingleTickerProv
     );
   }
 
-  Widget _themeOption(String id, String label, Color bg, Color text, bool isSelected, bibleRepo) {
+  Widget _themeOption(String id, String label, Color bg, Color text, bool isSelected, BibleRepository bibleRepo) {
     return GestureDetector(
       onTap: () { bibleRepo.updateReadingTheme(id); Navigator.pop(context); },
       child: Column(children: [
-        Container(width: 60, height: 60, decoration: BoxDecoration(color: bg, shape: BoxShape.circle, border: Border.all(color: isSelected ? const Color(0xFFD4AF37) : Colors.grey.shade300, width: isSelected ? 3 : 1), boxShadow: [if (isSelected) BoxShadow(color: const Color(0xFFD4AF37).withOpacity(0.3), blurRadius: 8)]), child: Center(child: Text("Aa", style: TextStyle(color: text, fontWeight: FontWeight.bold)))),
+        Container(width: 60, height: 60, decoration: BoxDecoration(color: bg, shape: BoxShape.circle, border: Border.all(color: isSelected ? const Color(0xFFD4AF37) : Colors.grey.shade300, width: isSelected ? 3 : 1), boxShadow: [if (isSelected) BoxShadow(color: const Color(0xFFD4AF37).withValues(alpha: 0.3), blurRadius: 8)]), child: Center(child: Text("Aa", style: TextStyle(color: text, fontWeight: FontWeight.bold)))),
         const SizedBox(height: 8),
         Text(label, style: GoogleFonts.lato(fontSize: 12, fontWeight: isSelected ? FontWeight.bold : FontWeight.normal))
       ]),
     );
   }
 
-  void _shareSelectedVerses(bibleRepo) async {
+  Future<void> _shareSelectedVerses(BibleRepository bibleRepo) async {
     final List<BibleVerse> selected = [];
     final List<String> sortedKeys = _selectedVerseKeys.toList()..sort();
     for (var k in sortedKeys) { final v = await bibleRepo.getVerseByKey(k); if (v != null) selected.add(v); }
@@ -659,19 +660,22 @@ class _BibleScreenState extends ConsumerState<BibleScreen> with SingleTickerProv
     Share.share(txt); setState(() => _selectedVerseKeys.clear());
   }
 
-  void _favoriteSelectedVerses(bibleRepo) async {
+  Future<void> _favoriteSelectedVerses(BibleRepository bibleRepo) async {
+    final messenger = ScaffoldMessenger.of(context);
     final List<BibleVerse> verses = [];
     for (var k in _selectedVerseKeys) { final v = await bibleRepo.getVerseByKey(k); if (v != null) verses.add(v); }
     if (verses.length == 1) {
       await bibleRepo.toggleFavorite(verses.first.verseKey);
     } else if (verses.length > 1) {
       final block = FavoriteBlock()..versionId = verses.first.versionId..bookId = verses.first.bookId..bookName = verses.first.bookName..chapter = verses.first.chapter..verses = (verses.map((v) => v.verse).toList()..sort())..text = verses.map((v) => v.text).join(' ')..timestamp = DateTime.now();
-      await bibleRepo.saveFavoriteBlock(block); ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Bloco favoritado!')));
+      await bibleRepo.saveFavoriteBlock(block);
+      if (!mounted) return;
+      messenger.showSnackBar(const SnackBar(content: Text('Bloco favoritado!')));
     }
     setState(() => _selectedVerseKeys.clear());
   }
 
-  Widget _colorOption(int? color, IconData? icon, bibleRepo) {
+  Widget _colorOption(int? color, IconData? icon, BibleRepository bibleRepo) {
     return GestureDetector(
       onTap: () async { for (var k in _selectedVerseKeys) {
         await bibleRepo.updateHighlightColor(k, color);
@@ -713,7 +717,7 @@ class _BibleScreenState extends ConsumerState<BibleScreen> with SingleTickerProv
               Text(panorama['proposito_principal'], style: GoogleFonts.lora(fontSize: 16, height: 1.6, color: Colors.black87)),
               const SizedBox(height: 24),
               _sectionTitle("Temas Chave"),
-              Wrap(spacing: 8, runSpacing: 8, children: (panorama['temas_chave'] as List).map((tema) => Container(padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5), decoration: BoxDecoration(color: const Color(0xFFD4AF37).withOpacity(0.1), borderRadius: BorderRadius.circular(15), border: Border.all(color: const Color(0xFFD4AF37).withOpacity(0.2))), child: Text(tema, style: GoogleFonts.lato(fontSize: 12, fontWeight: FontWeight.bold, color: const Color(0xFF5D4037))))).toList()),
+              Wrap(spacing: 8, runSpacing: 8, children: (panorama['temas_chave'] as List).map((tema) => Container(padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5), decoration: BoxDecoration(color: const Color(0xFFD4AF37).withValues(alpha: 0.1), borderRadius: BorderRadius.circular(15), border: Border.all(color: const Color(0xFFD4AF37).withValues(alpha: 0.2))), child: Text(tema, style: GoogleFonts.lato(fontSize: 12, fontWeight: FontWeight.bold, color: const Color(0xFF5D4037))))).toList()),
               const SizedBox(height: 24),
               _sectionTitle("Divisões Principais"),
               ...(panorama['divisoes_principais'] as List).map((div) => Padding(padding: const EdgeInsets.only(bottom: 20), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -761,7 +765,7 @@ class _StudyMenuSheet extends ConsumerWidget {
       context: context,
       barrierDismissible: true,
       barrierLabel: 'Fechar',
-      barrierColor: Colors.black.withOpacity(0.5),
+      barrierColor: Colors.black.withValues(alpha: 0.5),
       transitionDuration: const Duration(milliseconds: 300),
       pageBuilder: (context, anim1, anim2) => NoteEditorDialog(verseKey: verseKey),
       transitionBuilder: (context, anim1, anim2, child) => BackdropFilter(
@@ -786,7 +790,7 @@ class _MenuOption extends StatelessWidget {
       onTap: onTap, borderRadius: BorderRadius.circular(15),
       child: Container(
         padding: const EdgeInsets.all(16), decoration: BoxDecoration(border: Border.all(color: Colors.grey.shade100), borderRadius: BorderRadius.circular(15)),
-        child: Row(children: [Container(padding: const EdgeInsets.all(10), decoration: BoxDecoration(color: color.withOpacity(0.1), shape: BoxShape.circle), child: Icon(icon, color: color)), const SizedBox(width: 16), Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(title, style: GoogleFonts.lato(fontWeight: FontWeight.bold, fontSize: 16)), Text(subtitle, style: GoogleFonts.lato(color: Colors.grey, fontSize: 13))])), const Icon(Icons.arrow_forward_ios, size: 14, color: Colors.grey)]),
+        child: Row(children: [Container(padding: const EdgeInsets.all(10), decoration: BoxDecoration(color: color.withValues(alpha: 0.1), shape: BoxShape.circle), child: Icon(icon, color: color)), const SizedBox(width: 16), Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(title, style: GoogleFonts.lato(fontWeight: FontWeight.bold, fontSize: 16)), Text(subtitle, style: GoogleFonts.lato(color: Colors.grey, fontSize: 13))])), const Icon(Icons.arrow_forward_ios, size: 14, color: Colors.grey)]),
       ),
     );
   }
@@ -860,13 +864,13 @@ class _NoteEditorDialogState extends ConsumerState<NoteEditorDialog> {
         child: Container(
           width: MediaQuery.of(context).size.width * 0.92,
           height: MediaQuery.of(context).size.height * 0.85,
-          decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(30), boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 20, spreadRadius: 5)]),
+          decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(30), boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.1), blurRadius: 20, spreadRadius: 5)]),
           child: Column(children: [
             // Cabeçalho do Pop-up
             Padding(
               padding: const EdgeInsets.fromLTRB(24, 24, 16, 12),
               child: Row(children: [
-                Container(padding: const EdgeInsets.all(8), decoration: BoxDecoration(color: const Color(0xFFD4AF37).withOpacity(0.1), shape: BoxShape.circle), child: const Icon(Icons.history_edu, color: Color(0xFFD4AF37))),
+                Container(padding: const EdgeInsets.all(8), decoration: BoxDecoration(color: const Color(0xFFD4AF37).withValues(alpha: 0.1), shape: BoxShape.circle), child: const Icon(Icons.history_edu, color: Color(0xFFD4AF37))),
                 const SizedBox(width: 16),
                 Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(widget.readOnly ? "Visualizar Devocional" : "Meu Devocional", style: GoogleFonts.playfairDisplay(fontWeight: FontWeight.bold, fontSize: 18, color: const Color(0xFF5D4037))), Text("Guardando a revelação", style: GoogleFonts.lato(fontSize: 13, color: Colors.grey))])),
                 IconButton(icon: const Icon(Icons.close, color: Colors.grey), onPressed: () => Navigator.pop(context))
@@ -919,7 +923,7 @@ class _NoteEditorDialogState extends ConsumerState<NoteEditorDialog> {
                   decoration: BoxDecoration(
                     color: const Color(0xFFFDFBF7),
                     borderRadius: BorderRadius.circular(15),
-                    border: Border.all(color: const Color(0xFFD4AF37).withOpacity(0.2)),
+                    border: Border.all(color: const Color(0xFFD4AF37).withValues(alpha: 0.2)),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -1007,7 +1011,7 @@ class _NoteEditorDialogState extends ConsumerState<NoteEditorDialog> {
                           label: const Text('PARTILHAR'),
                           style: OutlinedButton.styleFrom(
                             foregroundColor: const Color(0xFF5D4037),
-                            side: BorderSide(color: const Color(0xFF5D4037).withOpacity(0.35)),
+                            side: BorderSide(color: const Color(0xFF5D4037).withValues(alpha: 0.35)),
                             minimumSize: const Size(0, 48),
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                           ),
@@ -1018,11 +1022,12 @@ class _NoteEditorDialogState extends ConsumerState<NoteEditorDialog> {
                         Expanded(
                           child: ElevatedButton.icon(
                             onPressed: () async {
+                              final navigator = Navigator.of(context);
+                              final messenger = ScaffoldMessenger.of(context);
                               await bibleRepo.saveNote(widget.verseKey, _contentController.text, title: _titleController.text);
-                              if (mounted) {
-                                Navigator.pop(context);
-                                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Devocional guardado com sucesso!")));
-                              }
+                              if (!mounted) return;
+                              navigator.pop();
+                              messenger.showSnackBar(const SnackBar(content: Text("Devocional guardado com sucesso!")));
                             },
                             icon: const Icon(Icons.check_circle_outline),
                             label: const Text("SALVAR"),
@@ -1211,10 +1216,10 @@ class _ChapterReaderViewState extends ConsumerState<_ChapterReaderView> {
                   children: [
                     GestureDetector(
                       key: vKey, onTap: () => widget.onVerseTap(v.verseKey), onLongPress: () => widget.onVerseLongPress(v.verseKey),
-                      child: AnimatedContainer(duration: const Duration(milliseconds: 300), padding: const EdgeInsets.all(8), margin: const EdgeInsets.only(bottom: 8), decoration: BoxDecoration(color: v.highlightColor != null ? Color(v.highlightColor!).withOpacity(0.3) : (isSelected || isSearchHighlight ? const Color(0xFFFFF176).withOpacity(0.3) : Colors.transparent), borderRadius: BorderRadius.circular(8), border: isSelected ? Border.all(color: const Color(0xFFD4AF37), width: 0.5) : null),
+                      child: AnimatedContainer(duration: const Duration(milliseconds: 300), padding: const EdgeInsets.all(8), margin: const EdgeInsets.only(bottom: 8), decoration: BoxDecoration(color: v.highlightColor != null ? Color(v.highlightColor!).withValues(alpha: 0.3) : (isSelected || isSearchHighlight ? const Color(0xFFFFF176).withValues(alpha: 0.3) : Colors.transparent), borderRadius: BorderRadius.circular(8), border: isSelected ? Border.all(color: const Color(0xFFD4AF37), width: 0.5) : null),
                       child: RichText(textAlign: TextAlign.left, text: TextSpan(style: GoogleFonts.lora(fontSize: widget.fontSize, height: 1.6, color: widget.textColor), children: [WidgetSpan(alignment: PlaceholderAlignment.middle, child: Row(mainAxisSize: MainAxisSize.min, children: [Text("${v.verse} ", style: GoogleFonts.lato(fontSize: 13, fontWeight: FontWeight.bold, color: v.isRead ? Colors.green : (isSelected ? const Color(0xFFD4AF37) : Colors.grey.shade400))), if (v.isFavorite) const Icon(Icons.favorite, size: 12, color: Colors.red), if (hasNote) const Icon(Icons.history_edu, size: 14, color: Color(0xFFD4AF37)), const SizedBox(width: 8)])), _buildVerseContent(v.text, isSearchHighlight ? widget.searchTerm : null)]))),
                     ),
-                    Divider(height: 1, thickness: 1.0, color: widget.textColor.withOpacity(0.2)),
+                    Divider(height: 1, thickness: 1.0, color: widget.textColor.withValues(alpha: 0.2)),
                     const SizedBox(height: 8),
                   ],
                 );
@@ -1234,5 +1239,5 @@ class _ChapterReaderViewState extends ConsumerState<_ChapterReaderView> {
     if (lastMatchEnd < text.length) spans.add(TextSpan(text: text.substring(lastMatchEnd)));
     return TextSpan(children: spans);
   }
-  Widget _buildConfirmationButton(bibleRepo, String version, int chapter) => FutureBuilder<bool>(key: ValueKey('confirmBtn_$chapter'), future: bibleRepo?.isChapterFullyRead(version, widget.bookId, chapter), builder: (context, snapshot) { final isRead = snapshot.data ?? false; return Center(child: ElevatedButton.icon(onPressed: () async { await bibleRepo?.markChapterAsRead(version, widget.bookId, chapter, !isRead); ref.invalidate(allBookProgressesProvider(version)); widget.onProgressUpdated?.call(); setState(() {}); }, icon: Icon(isRead ? Icons.check_circle : Icons.check_circle_outline, color: Colors.white), label: Text(isRead ? 'CAPÍTULO LIDO' : 'CONFIRMAR LEITURA', style: GoogleFonts.lato(fontWeight: FontWeight.bold, letterSpacing: 1.2)), style: ElevatedButton.styleFrom(backgroundColor: isRead ? Colors.green : const Color(0xFF5D4037), foregroundColor: Colors.white, padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30))))); });
+  Widget _buildConfirmationButton(BibleRepository? bibleRepo, String version, int chapter) => FutureBuilder<bool>(key: ValueKey('confirmBtn_$chapter'), future: bibleRepo?.isChapterFullyRead(version, widget.bookId, chapter), builder: (context, snapshot) { final isRead = snapshot.data ?? false; return Center(child: ElevatedButton.icon(onPressed: () async { await bibleRepo?.markChapterAsRead(version, widget.bookId, chapter, !isRead); ref.invalidate(allBookProgressesProvider(version)); widget.onProgressUpdated?.call(); setState(() {}); }, icon: Icon(isRead ? Icons.check_circle : Icons.check_circle_outline, color: Colors.white), label: Text(isRead ? 'CAPÍTULO LIDO' : 'CONFIRMAR LEITURA', style: GoogleFonts.lato(fontWeight: FontWeight.bold, letterSpacing: 1.2)), style: ElevatedButton.styleFrom(backgroundColor: isRead ? Colors.green : const Color(0xFF5D4037), foregroundColor: Colors.white, padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30))))); });
 }

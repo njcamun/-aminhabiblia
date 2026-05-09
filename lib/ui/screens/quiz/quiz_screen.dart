@@ -235,7 +235,7 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(24),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 20)],
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 20)],
       ),
       child: Column(
         children: [
@@ -329,7 +329,7 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
               const SizedBox(height: 32),
               Container(
                 padding: const EdgeInsets.all(24),
-                decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(24), boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 20)]),
+                decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(24), boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 20)]),
                 child: Column(
                   children: [
                     _buildSummaryRow('Acertos', '$_score / ${_questions.length}'),
