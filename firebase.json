@@ -42,6 +42,7 @@
     }
   ],
   "hosting": {
+    "site": "aminhabiblia",
     "public": "build/web",
     "ignore": [
       "firebase.json",
